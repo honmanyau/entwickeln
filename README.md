@@ -84,8 +84,8 @@ A function that calculates and return the next generation of the game.
 
 #### `[generations]`
 
-An optional parameter that is an integer that indicates the number of
-generations to simulate. The default value is 1.
+An optional parameter that is an integer greater than 1, it indicates
+the number of generations to simulate. The default value is 1.
 
 It is worth noting that generations are typically not "skipped" in a game of
 life. The option to specify the number of generations to simulate is designed
