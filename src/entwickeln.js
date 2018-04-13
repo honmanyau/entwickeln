@@ -13,8 +13,9 @@ function Entwickeln() {
 
     [yi, y0, yf].forEach((y) => {
       [xi, x0, xf].forEach((x) => {
+        const self = x === x0 && y === y0;
         // Count only neighbours
-        if (x !== x0 && y !== y0) {
+        if (!self) {
           const cell = game[y][x];
 
           numberOfNeighbours += (cell.state !== 'dead');
@@ -26,11 +27,15 @@ function Entwickeln() {
   }
 
   // Public API functions
-  function initialise(width, height, p = 0.5) {
+  function initialise(width, height, alpha = 0.25) {
     // Create the game grid using user-specified width and height
+    this.width = width;
+    this.height = height;
+    this.alpha = alpha;
+    this.generation = 0;
     this.game = Array.from(Array(height)).map((row) => {
       return Array.from(Array(width)).map((cell) => ({
-        state: Math.random() < p ? 'new' : 'dead',
+        state: Math.random() < alpha ? 'new' : 'dead',
         born: 0
       }));
     });
@@ -43,7 +48,7 @@ function Entwickeln() {
 
     for (let generation = 0; generation < generations; generation++) {
       this.generation += 1;
-      
+
       const referenceGeneration = clone(nextGeneration);
 
       nextGeneration.forEach((row, y) => {
@@ -60,9 +65,7 @@ function Entwickeln() {
             // "2. Any live cell with two or three live neighbours lives on to the
             // next generation."
             else if (numberOfNeighbours < 4) {
-              const alive = cell.state !== 'dead';
-
-              cell.state = (alive) ? 'alive' : 'dead';
+              cell.state = 'alive';
             }
             // "3. Any live cell with more than three live neighbours dies, as if
             // by overpopulation."
@@ -82,14 +85,24 @@ function Entwickeln() {
       });
     }
 
+    this.game = clone(nextGeneration);
+
     return clone(nextGeneration);
   }
 
+  function restart() {
+    return initialise(this.width, this.height, this.alpha);
+  }
+
   const publicAPI = {
-    evolve: evolve,
+    width: 0,
+    height: 0,
+    alpha: 0,
     game: null,
     generation: 0,
-    init: initialise
+    init: initialise,
+    evolve: evolve,
+    restart: restart
   };
 
   return publicAPI;
