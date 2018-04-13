@@ -32,23 +32,28 @@ function Entwickeln() {
     if (!Number(width) || !Number(height)) {
       console.error([
         'entwickeln.initialise(width, height[, alpha]):\n\n',
-        'The width and/or height argument entered is not a nmber.',
+        'The width and/or height argument entered is not a number.',
         ' The defualt value of 20 has been used.'
       ].join(''));
     }
 
-    if (!Number(alpha) || Math.abs(alpha) > 1) {
+    if (!Number(alpha)) {
       console.error([
         'entwickeln.initialise(width, height[, alpha]):\n\n',
-        'The optional argument alpha must be a number with a magnitude',
-        ' of less than or equal to 1. The defualt value of 0.25 has been used.'
+        'The optional argument alpha entered is not a number.',
+        'The defualt value of 0.25 has been used.'
       ].join(''));
     }
 
-    // Create the game grid using user-specified width and height
-    this.width = Math.floor(width) || 20;
-    this.height = Math.floor(height) || 20;
-    this.alpha = Math.abs(alpha) || 0.25;
+    // Clean up arguments
+    width = Math.floor(width) || 20;
+    height = Math.floor(height) || 20;
+    alpha = Math.abs(alpha) || 0.25;
+
+    // Update publicly available values and create the game grid
+    this.width = width;
+    this.height = height;
+    this.alpha = alpha;
     this.generation = 0;
     this.game = Array.from(Array(height)).map((row) => {
       return Array.from(Array(width)).map((cell) => ({
