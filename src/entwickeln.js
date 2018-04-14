@@ -65,7 +65,7 @@ function Entwickeln() {
     return clone(this.game);
   }
 
-  function evolve(generations = 1) {
+  function evolve(generations = 1, target = this.game) {
     if (Number.isNaN(Number(generations))) {
       console.error([
         'entwickeln.evolve([generations]):\n\n',
@@ -83,7 +83,8 @@ function Entwickeln() {
 
     generations = Math.floor(Math.abs(generations) || 1) || 1;
 
-    const nextGeneration = clone(this.game);
+    const notCustomInput = target === this.game;
+    const nextGeneration = clone(target);
 
     for (let generation = 0; generation < generations; generation++) {
       this.generation += 1;
@@ -124,7 +125,9 @@ function Entwickeln() {
       });
     }
 
-    this.game = clone(nextGeneration);
+    if (notCustomInput) {
+      this.game = clone(nextGeneration);
+    }
 
     return clone(nextGeneration);
   }
