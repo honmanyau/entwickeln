@@ -1,5 +1,7 @@
 # Entwickeln
 
+[![npm package](https://img.shields.io/npm/v/entwickeln.svg)](https://www.npmjs.org/package/entwickeln)
+
 > A JavaScript library for Conway's Game of Life
 
 ## Table of Contents
@@ -7,7 +9,7 @@
 * [Introduction](#introduction)
 * [Installation](#installation)
 * [Usage](#usage)
-* [API](#api)
+* [APIs](#apis)
 
 ## Introduction
 
@@ -25,11 +27,46 @@ overpopulation.
 > 4. Any dead cell with exactly three live neighbours becomes a live cell, as
 if by reproduction.
 
+Entwickeln employs periodic boundary conditions and has a set of APIs for
+accessing and editing a game.
+
 ## Installation
+
+Entwickeln is available as an NPM package:
+
+```sh
+npm install entwickeln
+```
 
 ## Usage
 
-## API
+```javascript
+import entwickeln from './entwickeln';
+
+// Initialise Entwickeln as a 40 x 20 grid
+entwickeln.init(2, 2);
+// [
+//   [{ state: 'new', gen: 0 }, { state: 'dead', gen: 0 }],
+//   [{ state: 'dead', gen: 0 }, { state: 'dead', gen: 0 }]
+// ]
+
+// Accessing the game's grid
+entwickeln.game;
+// [
+//   [{ state: 'new', gen: 0 }, { state: 'dead', gen: 0 }],
+//   [{ state: 'dead', gen: 0 }, { state: 'dead', gen: 0 }]
+// ]
+
+// Move the game forward by one generation
+entwickeln.evolve();
+// [
+//   [{ state: 'dead', gen: 1 }, { state: 'dead', gen: 0 }],
+//   [{ state: 'dead', gen: 0 }, { state: 'dead', gen: 0 }]
+// ]
+
+```
+
+## APIs
 
 ### `entwickeln.game`
 
@@ -39,7 +76,7 @@ state of the cell, for example:
 ```javascript
 {
   state: 'new'
-  born: 0
+  gen: 0
 }
 ```
 
@@ -48,7 +85,8 @@ The `state` property can take the a value of `'dead'`, `'new'` or `'alive'`:
 * `'new'`—a cell that became "occupied" during the last evolution/iteration
 * `'alive'`—a cell that has been "occupied" for more than one generation
 
-The `born` property holds a number that indicates when a cell became alive.
+The `gen` property holds a number that indicates the generation the last
+state change occurred for this particular cell.
 
 ### `entwickeln.generation`
 
@@ -58,7 +96,7 @@ A number that indicates the current generation of the game.
 
 A function that initialises the game at generation 0 with the specified
 `width` and `height` and randomly populates the cells. A cell populated
-in this manner takes the form of `{ state: 'new', born: 0 }`.
+in this manner takes the form of `{ state: 'new', gen: 0 }`.
 
 #### `width`
 
@@ -118,3 +156,27 @@ to initialise the current game.
 An array of arrays, where the number of nested arrays corresponds to the
 `height` of the game and the length of each nested array corresponds to
 the `width` of the game.
+
+### `entwickeln.edit(x, y, state)`
+
+A function for editing the state of a given cell in the current generation of
+the game.
+
+#### `x`
+
+An integer that represents the x-coordinate of the cell to be edited.
+
+#### `y`
+
+An integer that represents the y-coordinate of the cell to be edited.
+
+#### `state`
+
+A string that indicates the target state of the target cell. It takes the
+value of `"dead"`, `"new"`, or `"alive"`.
+
+### `entwickeln.toggle(x, y)`
+
+A function for toggling the state of a cell, from either `"new"` or `"alive"` to
+`"dead"`, or from `"dead"` to `"new"`. It is a syntactic sugar built upon the
+`edit` function.

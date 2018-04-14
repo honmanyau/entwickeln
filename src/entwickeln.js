@@ -41,7 +41,7 @@ function Entwickeln() {
       console.error([
         'entwickeln.initialise(width, height[, alpha]):\n\n',
         'The optional argument alpha entered is not a number.',
-        'The defualt value of 0.25 has been used.'
+        ' The defualt value of 0.25 has been used.'
       ].join(''));
     }
 
@@ -58,7 +58,7 @@ function Entwickeln() {
     this.game = Array.from(Array(height)).map((row) => {
       return Array.from(Array(width)).map((cell) => ({
         state: Math.random() < alpha ? 'new' : 'dead',
-        born: 0
+        gen: 0
       }));
     });
 
@@ -70,14 +70,14 @@ function Entwickeln() {
       console.error([
         'entwickeln.evolve([generations]):\n\n',
         'The optional argument generations entered is not a number.',
-        'The defualt value of 1 has been used.'
+        ' The defualt value of 1 has been used.'
       ].join(''));
     }
     else if (Number(generations) < 1) {
       console.error([
         'entwickeln.evolve([generations]):\n\n',
         'The optional argument generations entered is less than 1.',
-        'The defualt value of 1 has been used.'
+        ' The defualt value of 1 has been used.'
       ].join(''));
     }
 
@@ -101,16 +101,19 @@ function Entwickeln() {
             // if caused by underpopulation."
             if (numberOfNeighbours < 2) {
               cell.state = 'dead';
+              cell.gen = this.generation;
             }
             // "2. Any live cell with two or three live neighbours lives on to
             // the next generation."
             else if (numberOfNeighbours < 4) {
               cell.state = 'alive';
+              cell.gen = this.generation;
             }
             // "3. Any live cell with more than three live neighbours dies, as
             // if by overpopulation."
             else {
               cell.state = 'dead';
+              cell.gen = this.generation;
             }
           }
           else {
@@ -118,7 +121,7 @@ function Entwickeln() {
             // live cell, as if by reproduction."
             if (numberOfNeighbours === 3) {
               cell.state = 'new';
-              cell.born = this.generation;
+              cell.gen = this.generation;
             }
           }
         });
@@ -136,6 +139,64 @@ function Entwickeln() {
     return initialise(this.width, this.height, this.alpha);
   }
 
+  function edit(x, y, state) {
+    if (Number.isNaN(Number(x)) || Number.isNaN(Number(y))) {
+      return console.error([
+        'entwickeln.edit(x, y, state):\n\n',
+        'The argument x and y must be a number but the arguments received',
+        ` are ${x} and ${y}, respectively. No cell was edited.`
+      ].join(''));
+    }
+
+    const states = ['dead', 'alive', 'new'];
+
+    if (states.indexOf(state) === -1) {
+      return console.error([
+        'entwickeln.edit(x, y, state):\n\n',
+        `The state provided, ${state} is not a valid option. The valid options`,
+        ` are "dead", "new" or "alive". The cell ${x}, ${y} was not edited.`
+      ].join(''));
+    }
+
+    const { width, height } = this;
+
+    // Allow the use of x and y that are outside the range specified
+    // by the width and height of the game (periodic boundary conditions)
+    x = ((x < 0) ? width - x : x) % width;
+    y = ((y < 0) ? height - y : y) % height;
+
+    const cell = this.game[y][x];
+
+    cell.state = state;
+    cell.gen = this.generation;
+
+    return clone(this.game);
+  }
+
+  function toggle(x, y) {
+    if (Number.isNaN(Number(x)) || Number.isNaN(Number(y))) {
+      return console.error([
+        'entwickeln.toggle(x, y):\n\n',
+        'The argument x and y must be a number but the arguments received',
+        ` are ${x} and ${y}, respectively. No cell was edited.`
+      ].join(''));
+    }
+
+    const { width, height } = this;
+
+    // Allow the use of x and y that are outside the range specified
+    // by the width and height of the game (periodic boundary conditions)
+    x = ((x < 0) ? width - x : x) % width;
+    y = ((y < 0) ? height - y : y) % height;
+
+    const cell = this.game[y][x];
+
+    cell.state = (cell.state === 'dead') ? 'new' : 'dead';
+    cell.gen = this.generation;
+
+    return clone(this.game);
+  }
+
   const publicAPI = {
     width: 0,
     height: 0,
@@ -144,7 +205,9 @@ function Entwickeln() {
     generation: 0,
     init: initialise,
     evolve: evolve,
-    restart: restart
+    restart: restart,
+    edit: edit,
+    toggle: toggle
   };
 
   return publicAPI;
