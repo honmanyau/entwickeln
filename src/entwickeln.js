@@ -29,7 +29,7 @@ function Entwickeln() {
   // Public API functions
   function initialise(width, height, alpha = 0.25) {
     // Handling unexpected inputs
-    if (!Number(width) || !Number(height)) {
+    if (Number.isNaN(Number(width)) || Number.isNaN(Number(height))) {
       console.error([
         'entwickeln.initialise(width, height[, alpha]):\n\n',
         'The width and/or height argument entered is not a number.',
@@ -37,7 +37,7 @@ function Entwickeln() {
       ].join(''));
     }
 
-    if (!Number(alpha)) {
+    if (Number.isNaN(Number(alpha))) {
       console.error([
         'entwickeln.initialise(width, height[, alpha]):\n\n',
         'The optional argument alpha entered is not a number.',
@@ -46,8 +46,8 @@ function Entwickeln() {
     }
 
     // Clean up arguments
-    width = Math.floor(width) || 20;
-    height = Math.floor(height) || 20;
+    width = Math.floor(Math.abs(width)) || 20;
+    height = Math.floor(Math.abs(height)) || 20;
     alpha = Math.abs(alpha) || 0.25;
 
     // Update publicly available values and create the game grid
@@ -66,6 +66,23 @@ function Entwickeln() {
   }
 
   function evolve(generations = 1) {
+    if (Number.isNaN(Number(generations))) {
+      console.error([
+        'entwickeln.evolve([generations]):\n\n',
+        'The optional argument generations entered is not a number.',
+        'The defualt value of 1 has been used.'
+      ].join(''));
+    }
+    else if (Number(generations) < 1) {
+      console.error([
+        'entwickeln.evolve([generations]):\n\n',
+        'The optional argument generations entered is less than 1.',
+        'The defualt value of 1 has been used.'
+      ].join(''));
+    }
+
+    generations = Math.floor(Math.abs(generations) || 1) || 1;
+
     const nextGeneration = clone(this.game);
 
     for (let generation = 0; generation < generations; generation++) {
@@ -79,18 +96,18 @@ function Entwickeln() {
           const alive = cell.state !== 'dead';
 
           if (alive) {
-            // "1. Any live cell with fewer than two live neighbours dies, as if
-            // caused by underpopulation."
+            // "1. Any live cell with fewer than two live neighbours dies, as
+            // if caused by underpopulation."
             if (numberOfNeighbours < 2) {
               cell.state = 'dead';
             }
-            // "2. Any live cell with two or three live neighbours lives on to the
-            // next generation."
+            // "2. Any live cell with two or three live neighbours lives on to
+            // the next generation."
             else if (numberOfNeighbours < 4) {
               cell.state = 'alive';
             }
-            // "3. Any live cell with more than three live neighbours dies, as if
-            // by overpopulation."
+            // "3. Any live cell with more than three live neighbours dies, as
+            // if by overpopulation."
             else {
               cell.state = 'dead';
             }
