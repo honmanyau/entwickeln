@@ -78,7 +78,7 @@ An array of arrays, where the number of nested arrays corresponds to the
 `height` of the game and the length of each nested array corresponds to
 the `width` of the game.
 
-### `entwickeln.evolve([generations])`
+### `entwickeln.evolve([generations][, target])`
 
 A function that calculates and return the next generation of the game.
 
@@ -91,6 +91,13 @@ It is worth noting that generations are typically not "skipped" in a game of
 life. The option to specify the number of generations to simulate is designed
 for potentially creating reasonably time-accurate Game of Life, where rendering
 may not necessarily occur for every generation.
+
+#### `[target]`
+
+An optional argument that is an array of arrays representing the game. Using
+this optional parameter prevents `entwickeln.evolve` from updating
+`entwickeln.game`. This option is primarily designed for prediction or use
+outside a Game of Life implementation.
 
 #### Return value
 
