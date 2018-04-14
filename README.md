@@ -38,6 +38,18 @@ Entwickeln is available as an NPM package:
 npm install entwickeln
 ```
 
+```javascript
+import entwickeln from 'entwickeln';
+```
+
+A minified library version is also available in the `/lib` directory of this
+repository. It can be included in a project with the script tag in HTML. For
+example:
+
+```html
+<script type="text/javascript" src="/scripts/entwickeln.min.js"></script>
+```
+
 ## Usage
 
 ```javascript
