@@ -12,3 +12,6 @@
 the use of this property.
 * Added a new API for editing cells.
 * Updated readme.
+
+**1.2.0**
+* Fixed incorrect boundary conditions implementation in `countNeighbour()`

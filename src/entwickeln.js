@@ -4,11 +4,12 @@ function Entwickeln() {
   }
 
   function countNeighbours(x0, y0, game) {
-    const l = game.length;
-    const xi = (x0 - 1 < 0) ? l - 1 : (x0 - 1);
-    const xf = (x0 + 1 === l) ? 0 : (x0 + 1);
-    const yi = (y0 - 1 < 0) ? l - 1 : (y0 - 1);
-    const yf = (y0 + 1 === l) ? 0 : (y0 + 1);
+    const w = game[0].length;
+    const h = game.length;
+    const xi = (x0 - 1 < 0) ? w - 1 : (x0 - 1);
+    const xf = (x0 + 1 === w) ? 0 : (x0 + 1);
+    const yi = (y0 - 1 < 0) ? h - 1 : (y0 - 1);
+    const yf = (y0 + 1 === h) ? 0 : (y0 + 1);
     let numberOfNeighbours = 0;
 
     [yi, y0, yf].forEach((y) => {
