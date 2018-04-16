@@ -1,28 +1,23 @@
 function Entwickeln() {
-  function clone(obj) {
-    return JSON.parse(JSON.stringify(obj));
-  }
-
-  function countNeighbours(x0, y0, game) {
+  function countNeighbours(x0, y0, alive, game) {
     const w = game[0].length;
     const h = game.length;
     const xi = (x0 - 1 < 0) ? w - 1 : (x0 - 1);
     const xf = (x0 + 1 === w) ? 0 : (x0 + 1);
     const yi = (y0 - 1 < 0) ? h - 1 : (y0 - 1);
     const yf = (y0 + 1 === h) ? 0 : (y0 + 1);
-    let numberOfNeighbours = 0;
+    let numberOfNeighbours = -(game[y0][x0].state !== 'dead');
 
-    [yi, y0, yf].forEach((y) => {
-      [xi, x0, xf].forEach((x) => {
-        const self = x === x0 && y === y0;
-        // Count only neighbours
-        if (!self) {
-          const cell = game[y][x];
+    for (let i = 0; i < 3; i++) {
+      const y = [yi, y0, yf][i];
 
-          numberOfNeighbours += (cell.state !== 'dead');
-        }
-      });
-    });
+      for (let j = 0; j < 3; j++) {
+        const x = [xi, x0, xf][j];
+        const cell = game[y][x];
+
+        numberOfNeighbours += (cell.state !== 'dead');
+      }
+    }
 
     return numberOfNeighbours;
   }
@@ -85,25 +80,29 @@ function Entwickeln() {
     generations = Math.floor(Math.abs(generations) || 1) || 1;
 
     const notCustomInput = target === this.game;
-    const nextGeneration = [];
+    const width = target[0].length;
+    const height = target.length;
 
     for (let generation = 0; generation < generations; generation++) {
       this.generation += 1;
 
-      target.forEach((row, y) => {
+      const nextGeneration = [];
+
+      for (let y = 0; y < height; y++) {
         if (!nextGeneration[y]) {
           nextGeneration[y] = [];
         }
 
-        row.forEach((cell, x) => {
+        for (let x = 0; x < width; x++) {
           if (!nextGeneration[y][x]) {
             nextGeneration[y][x] = [];
           }
 
-          const numberOfNeighbours = countNeighbours(x, y, target);
+          const cell = target[y][x];
           const { state, gen } = cell;
           const nextCell = { state, gen };
           const alive = state !== 'dead';
+          const numberOfNeighbours = countNeighbours(x, y, alive, target);
 
           if (alive) {
             // "1. Any live cell with fewer than two live neighbours dies, as
@@ -135,15 +134,17 @@ function Entwickeln() {
           }
 
           nextGeneration[y][x] = nextCell;
-        });
-      });
+        }
+      }
+
+      if (notCustomInput) {
+        this.game = nextGeneration;
+      }
+
+      target = nextGeneration;
     }
 
-    if (notCustomInput) {
-      this.game = clone(nextGeneration);
-    }
-
-    return nextGeneration;
+    return target;
   }
 
   function restart() {
