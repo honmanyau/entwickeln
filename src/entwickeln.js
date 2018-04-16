@@ -63,7 +63,7 @@ function Entwickeln() {
       }));
     });
 
-    return clone(this.game);
+    return this.game;
   }
 
   function evolve(generations = 1, target = this.game) {
@@ -85,46 +85,56 @@ function Entwickeln() {
     generations = Math.floor(Math.abs(generations) || 1) || 1;
 
     const notCustomInput = target === this.game;
-    const nextGeneration = clone(target);
+    const nextGeneration = [];
 
     for (let generation = 0; generation < generations; generation++) {
       this.generation += 1;
 
-      const referenceGeneration = clone(nextGeneration);
+      target.forEach((row, y) => {
+        if (!nextGeneration[y]) {
+          nextGeneration[y] = [];
+        }
 
-      nextGeneration.forEach((row, y) => {
         row.forEach((cell, x) => {
-          const numberOfNeighbours = countNeighbours(x, y, referenceGeneration);
-          const alive = cell.state !== 'dead';
+          if (!nextGeneration[y][x]) {
+            nextGeneration[y][x] = [];
+          }
+
+          const numberOfNeighbours = countNeighbours(x, y, target);
+          const { state, gen } = cell;
+          const nextCell = { state, gen };
+          const alive = state !== 'dead';
 
           if (alive) {
             // "1. Any live cell with fewer than two live neighbours dies, as
             // if caused by underpopulation."
             if (numberOfNeighbours < 2) {
-              cell.state = 'dead';
-              cell.gen = this.generation;
+              nextCell.state = 'dead';
+              nextCell.gen = this.generation;
             }
             // "2. Any live cell with two or three live neighbours lives on to
             // the next generation."
             else if (numberOfNeighbours < 4) {
-              cell.state = 'alive';
-              cell.gen = this.generation;
+              nextCell.state = 'alive';
+              nextCell.gen = this.generation;
             }
             // "3. Any live cell with more than three live neighbours dies, as
             // if by overpopulation."
             else {
-              cell.state = 'dead';
-              cell.gen = this.generation;
+              nextCell.state = 'dead';
+              nextCell.gen = this.generation;
             }
           }
           else {
             // "4. Any dead cell with exactly three live neighbours becomes a
             // live cell, as if by reproduction."
             if (numberOfNeighbours === 3) {
-              cell.state = 'new';
-              cell.gen = this.generation;
+              nextCell.state = 'new';
+              nextCell.gen = this.generation;
             }
           }
+
+          nextGeneration[y][x] = nextCell;
         });
       });
     }
@@ -133,7 +143,7 @@ function Entwickeln() {
       this.game = clone(nextGeneration);
     }
 
-    return clone(nextGeneration);
+    return nextGeneration;
   }
 
   function restart() {
@@ -171,7 +181,7 @@ function Entwickeln() {
     cell.state = state;
     cell.gen = this.generation;
 
-    return clone(this.game);
+    return this.game;
   }
 
   function toggle(x, y) {
@@ -195,7 +205,7 @@ function Entwickeln() {
     cell.state = (cell.state === 'dead') ? 'new' : 'dead';
     cell.gen = this.generation;
 
-    return clone(this.game);
+    return this.game;
   }
 
   const publicAPI = {

@@ -15,3 +15,6 @@ the use of this property.
 
 **1.2.0**
 * Fixed incorrect boundary conditions implementation in `countNeighbour()`
+
+**1.3.0**
+* Substantial performance improvement after refactoring. No breaking changes.
